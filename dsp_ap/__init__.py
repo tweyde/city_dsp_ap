@@ -1,0 +1,1 @@
+from .audiosignal import AudioSignal
