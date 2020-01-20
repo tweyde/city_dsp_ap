@@ -38,7 +38,7 @@ class AudioSignal(TimeSignal):
         super().__init__(samples, samplerate)
 
     def play(self):
-        return display(Audio(self.samples, rate=self.samplerate))
+        return display(Audio(self.samples, rate=self.samplerate, normalize=False))
 
     def plot(self):
         fig = figure(width=800, height=400, x_axis_label='time [s]', y_axis_label='amplitude', y_range=(-1, 1), 
