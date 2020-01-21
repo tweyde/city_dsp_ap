@@ -1,7 +1,8 @@
+from .util import Audio
 from abc import ABC, abstractmethod
 import numpy as np
 from scipy import fft
-from IPython.display import Audio, display
+from IPython.display import display
 from bokeh.plotting import figure, show
 from bokeh.layouts import gridplot
 from bokeh.io import output_notebook
