@@ -95,11 +95,13 @@ class Spectrum(Signal):
     def plot(self, **fig_args):
         default_args = {
             'width': 900, 'height': 300, 
-            'x_axis_label': 'frequency [Hz]', 'y_axis_label': 'intensity',
+            'x_axis_label': 'frequency [Hz]', 'y_axis_label': 'amplitude',
             'tools': 'pan,wheel_zoom,box_zoom,zoom_in,zoom_out,save,reset', 
             'active_drag': 'pan',
             'toolbar_location': 'above',
         }
+        if self.power == 2:
+            default_args['y_axis_label'] = 'power'
         if self.decibels:
             default_args['y_axis_label'] += ' [dB]'
         fig = figure(**{**default_args, **fig_args})
