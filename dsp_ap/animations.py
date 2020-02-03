@@ -14,7 +14,7 @@ def sine_approx(signal, samplerate=None, include_cosines=False, min_freq=0, figs
     if min_freq == 0:
         min_freq = samplerate / num_samples
     
-    num_freqs = math.ceil((samplerate / 2) / min_freq)
+    num_freqs = math.ceil((samplerate / 2) / min_freq) + 1
     
     freqs = np.empty(num_freqs)
     sin_corr = np.empty(num_freqs)
@@ -60,16 +60,18 @@ def sine_approx(signal, samplerate=None, include_cosines=False, min_freq=0, figs
         
         # plot
         if include_cosines:
-            x_offset = samplerate / 2 / num_freqs / 10 # to improve display
+            x_offset = samplerate / 2 / num_freqs / 10 # offset of 1/10th of inter-marker distance to avoid overlapping markers
             sine_components.set_data(freqs[:i+1]-x_offset, sin_corr[:i+1])
             cosine_components.set_data(freqs[:i+1]+x_offset, cos_corr[:i+1])
             label.set_text('{} Hz, sin corr {:.3f}, cos corr {:.3f}'.format(freqs[i], sin_corr[i], cos_corr[i]))
         else:
             sine_components.set_data(freqs[:i+1], sin_corr[:i+1])
             label.set_text('{} Hz, sin corr {:.3f}'.format(freqs[i], sin_corr[i]))
+#         update_stemcontainer_lc(stems, output[:i])
         progress.set_data([freqs[i], freqs[i]], [0, 1])
         approx.set_data(timepoints, cumul)
         return (sine_components, cosine_components, progress, approx, label)
     
     anim = animation.FuncAnimation(fig, animate, frames=num_freqs, interval=1000/fps, blit=True)
     display(HTML(anim.to_html5_video()))
+    plt.close(fig)
