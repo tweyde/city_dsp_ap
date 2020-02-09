@@ -2,6 +2,7 @@ import IPython.display
 import numpy as np
 from math import log10
 
+
 class Audio(IPython.display.Audio):
 
     def __init__(self, data=None, filename=None, url=None, embed=None, rate=None, autoplay=False, normalize=False):

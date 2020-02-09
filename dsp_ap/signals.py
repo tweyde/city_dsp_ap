@@ -9,19 +9,51 @@ from bokeh.io import output_notebook
 output_notebook()
 
 
-def get_samples_and_rate(input, samplerate):
-    if isinstance(input, AudioSignal):
+def get_samples_and_rate(input_signal, samplerate):
+    if isinstance(input_signal, TimeSignal):
         if samplerate is not None:
-            print('Explicitly defined samplerate gets ignored when input is an AudioSignal', samplerate)
-        samples = input.samples
-        samplerate = input.samplerate
-    elif np.ndim(input) > 0:
+            print('Explicitly defined samplerate gets ignored when input is a TimeSignal', samplerate)
+        samples = input_signal.samples
+        samplerate = input_signal.samplerate
+    elif np.ndim(input_signal) > 0:
         if samplerate is None:
             raise ValueError('The samplerate needs to be defined explicitly when input is an array or other iterable')
-        samples = np.asarray(input)
+        samples = np.asarray(input_signal)
     else:
-        raise TypeError('Only AudioSignals, Numpy arrays or other iterables are supported as input, not {}'.format(type(input)))
+        raise TypeError('Only TimeSignals, Numpy arrays or other iterables are supported as input, not {}'.format(type(input_signal)))
     return samples, samplerate
+
+
+def get_samples(input_signal):
+    if isinstance(input_signal, TimeSignal):
+        return input_signal.samples
+    elif np.ndim(input_signal) > 0:
+        return np.asarray(input_signal)
+    else:
+        raise TypeError('Only TimeSignals, Numpy arrays or other iterables are supported as input, not {}'.format(type(input_signal)))
+
+
+def get_both_samples_and_rate(input_signal1, input_signal2, samplerate=None):
+    samples1, samplerate1 = get_samples_and_rate(input_signal1, samplerate)
+    samples2, samplerate2 = get_samples_and_rate(input_signal2, samplerate)
+    if samplerate1 != samplerate2:
+        raise ValueError('Both signals need to have the same samplerate')
+    return samples1, samples2, samplerate1
+
+
+def get_both_samples(input_signal1, input_signal2):
+    samples1 = get_samples(input_signal1)
+    samples2 = get_samples(input_signal2)
+    if isinstance(input_signal1, TimeSignal) and isinstance(input_signal2, TimeSignal) and input_signal1.samplerate != input_signal2.samplerate:
+        raise ValueError('Both signals need to have the same samplerate')
+    return samples1, samples2
+
+
+def same_type_as(output_samples, input_signal):
+    if isinstance(input_signal, TimeSignal):
+        return type(input_signal)(output_samples, input_signal.samplerate)
+    else:
+        return output_samples
 
 
 class Signal(ABC):
