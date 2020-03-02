@@ -6,15 +6,21 @@ from math import log10
 class Audio(IPython.display.Audio):
 
     def __init__(self, data=None, filename=None, url=None, embed=None, rate=None, autoplay=False, normalize=False):
+        if not normalize and data is not None:
+            data_array = np.asarray(data)
+            # convert non-floating point data to floating point in interval [-1, 1]
+            if np.issubdtype(data_array.dtype, np.signedinteger):
+                data = 1 / 2**(8*data_array.dtype.itemsize-1) * data_array
+            elif np.issubdtype(data_array.dtype, np.unsignedinteger):
+                data = 1 / 2**(8*data_array.dtype.itemsize-1) * data_array - 1
         try:
             super().__init__(data=data, filename=filename, url=url, embed=embed, rate=rate, autoplay=autoplay, normalize=normalize)
         except TypeError:
             if not normalize and data is not None:
-                data = np.asarray(data)
                 s = list(data.shape)
                 s[-1] = 1
                 data = np.append(data, np.ones(s), axis=-1)
-            super().__init__(data=data, filename=filename, url=url, embed=embed, rate=rate, autoplay=autoplay)
+            super().__init__(data=data, filename=filename, url=url, embed=embed, rate=rate, autoplay=autoplay)        
 
 
 def adsr_window_log(max_amp, sustain_amp, attack_size, decay_size, sustain_size, release_size):
