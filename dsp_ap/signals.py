@@ -5,6 +5,7 @@ from scipy import fft, signal
 from IPython.display import display
 from bokeh.plotting import figure, show
 from bokeh.layouts import gridplot
+from bokeh.models.tools import HoverTool
 from bokeh.io import output_notebook
 output_notebook()
 
@@ -97,10 +98,17 @@ class AudioSignal(TimeSignal):
             'y_range': (-1, 1), 
             'tools': 'xpan,xwheel_zoom,box_zoom,xzoom_in,xzoom_out,save,reset', 
             'active_drag': 'xpan',
+            'active_inspect': None,
+            'active_scroll': None,
             'toolbar_location': 'above',
         }
+        hover_tool = HoverTool(
+            tooltips=[('time [s]', '$x{0.000}'), ('amplitude', '$y{0.000}')],
+            mode='vline',
+        )
         fig = figure(**{**default_args, **fig_args})
         fig.line(self.timepoints, self.samples, line_width=2)
+        fig.add_tools(hover_tool)
         return fig
 
 
@@ -110,7 +118,7 @@ class Spectrum(Signal):
         samples, samplerate = get_samples_and_rate(input, samplerate)
 
         if num_bins is None:
-            num_bins = np.clip(len(samples), 2**10, 2**14)
+            num_bins = len(samples)
 
         self.power = power
         self.decibels = decibels
@@ -130,14 +138,23 @@ class Spectrum(Signal):
             'x_axis_label': 'frequency [Hz]', 'y_axis_label': 'amplitude',
             'tools': 'pan,wheel_zoom,box_zoom,zoom_in,zoom_out,save,reset', 
             'active_drag': 'pan',
+            'active_inspect': None,
+            'active_scroll': None,
             'toolbar_location': 'above',
         }
+        hover_tool = HoverTool(
+            tooltips=[('frequency [Hz]', '$x{0.}'), ['amplitude', '$y{0.000}']],
+            mode='vline',
+        )
         if self.power == 2:
             default_args['y_axis_label'] = 'power'
+            hover_tool.tooltips[1][0] = 'power'
         if self.decibels:
             default_args['y_axis_label'] += ' [dB]'
+            hover_tool.tooltips[1][0] += ' [dB]'
         fig = figure(**{**default_args, **fig_args})
         fig.line(self.frequencies, self.spectrum, line_width=2)
+        fig.add_tools(hover_tool)
         return fig
 
 
