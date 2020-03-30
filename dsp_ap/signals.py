@@ -5,6 +5,8 @@ from scipy import fft, signal
 from IPython.display import display
 from bokeh.plotting import figure, show
 from bokeh.layouts import gridplot
+from bokeh.models.mappers import LinearColorMapper
+from bokeh.models.ranges import DataRange1d
 from bokeh.models.tools import HoverTool
 from bokeh.io import output_notebook
 output_notebook()
@@ -165,6 +167,51 @@ class PowerSpectrum(Spectrum):
 
 class Spectrogram(Signal):
 
-    def __init__(self, input, frame_duration, step_duration, samplerate=None, num_bins=None, power=1, decibels=True):
-        self.array = None
-    
+    def __init__(self, input_signal, frame_duration, step_duration, samplerate=None, num_bins=None, window='hamming', power=1, decibels=True):
+        samples, samplerate = get_samples_and_rate(input_signal, samplerate)
+
+        self.power = power
+        self.decibels = decibels
+
+        frame_size = round(frame_duration * samplerate)
+        overlap_size = round((frame_duration-step_duration) * samplerate)
+
+        self.frequencies, self.times, self.array = signal.stft(samples, fs=samplerate, window=window, nperseg=frame_size, noverlap=overlap_size)
+
+        if decibels:
+            self.array = power * 10 * np.log10(self.array)
+        else:
+            self.array **= power
+
+    def plot(self, lowest_value=None, highest_value=None, palette=None, **fig_args):
+        if not palette:
+            palette = ['#081d58', '#253494', '#225ea8', '#1d91c0', '#41b6c4', '#7fcdbb', '#c7e9b4', '#edf8b1', '#ffffd9']
+        if not lowest_value:
+            lowest_value = np.min(np.abs(self.array))
+        if not highest_value:
+            highest_value = np.max(np.abs(self.array))
+        
+        default_args = {
+            'width': 900, 'height': 400, 
+            'x_axis_label': 'time [s]', 'y_axis_label': 'frequency [Hz]',
+            'tools': 'hover,pan,wheel_zoom,box_zoom,zoom_in,zoom_out,save,reset',
+            'active_drag': 'pan',
+            'active_inspect': None,
+            'active_scroll': None,
+            'toolbar_location': 'above',
+            'tooltips': [('time [s]', '$x{0.000}'), ('frequency [Hz]', '$y{0.}'), ['amplitude', '@image']],
+        }
+
+        if self.power == 2:
+            default_args['tooltips'][2][0] = 'power'
+        if self.decibels:
+            default_args['tooltips'][2][0] += ' [dB]'
+
+        fig = figure(**{**default_args, **fig_args})
+        if isinstance(fig.x_range, DataRange1d):
+            fig.x_range.range_padding = 0
+        if isinstance(fig.y_range, DataRange1d):
+            fig.y_range.range_padding = 0
+        mapper = LinearColorMapper(palette=palette, low=lowest_value, high=highest_value)
+        fig.image([np.abs(self.array)], x=self.times[0], y=self.frequencies[0], dw=self.times[-1], dh=self.frequencies[-1], color_mapper=mapper)
+        return fig
