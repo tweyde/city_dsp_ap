@@ -8,6 +8,7 @@ from bokeh.layouts import gridplot
 from bokeh.models.mappers import LinearColorMapper
 from bokeh.models.ranges import DataRange1d
 from bokeh.models.tools import HoverTool
+from bokeh.palettes import Viridis256
 from bokeh.io import output_notebook
 output_notebook()
 
@@ -90,8 +91,8 @@ class AudioSignal(TimeSignal):
     def __init__(self, samples, samplerate):
         super().__init__(samples, samplerate)
 
-    def play(self):
-        return display(Audio(self.samples, rate=self.samplerate, normalize=False))
+    def play(self, normalize=False):
+        return display(Audio(self.samples, rate=self.samplerate, normalize=normalize))
 
     def plot(self, **fig_args):
         default_args = {
@@ -167,7 +168,7 @@ class PowerSpectrum(Spectrum):
 
 class Spectrogram(Signal):
 
-    def __init__(self, input_signal, frame_duration, step_duration, samplerate=None, num_bins=None, window='hamming', power=1, decibels=True):
+    def __init__(self, input_signal, frame_duration, step_duration, samplerate=None, num_bins=None, window='hann', power=1, decibels=True):
         samples, samplerate = get_samples_and_rate(input_signal, samplerate)
 
         self.power = power
@@ -185,7 +186,7 @@ class Spectrogram(Signal):
 
     def plot(self, lowest_value=None, highest_value=None, palette=None, **fig_args):
         if not palette:
-            palette = ['#081d58', '#253494', '#225ea8', '#1d91c0', '#41b6c4', '#7fcdbb', '#c7e9b4', '#edf8b1', '#ffffd9']
+            palette = list(reversed(Viridis256))
         if not lowest_value:
             lowest_value = np.min(np.abs(self.array))
         if not highest_value:
