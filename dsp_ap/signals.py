@@ -79,7 +79,7 @@ class TimeSignal(Signal):
         self.samplerate = samplerate
         self.timepoints = np.arange(len(samples)) / samplerate
 
-    def plot(self, **fig_args):
+    def plot(self, **fig_args) -> figure:
         fig = figure(width=800, height=400, x_axis_label='time [s]', y_axis_label='amplitude',
              tools='pan,wheel_zoom,box_zoom,zoom_in,zoom_out,save,reset', active_drag='pan')
         fig.line(self.timepoints, self.samples, line_width=2)
@@ -95,6 +95,11 @@ class AudioSignal(TimeSignal):
         return display(Audio(self.samples, rate=self.samplerate, normalize=normalize))
 
     def plot(self, **fig_args):
+        """
+        Plot the audio signal waveform with a Bokeh figure.
+        :param fig_args: The arguments for the Bokeh figure.
+        :return: A Bokeh figure for display.
+        """
         default_args = {
             'width': 900, 'height': 300, 
             'x_axis_label': 'time [s]', 'y_axis_label': 'amplitude', 
