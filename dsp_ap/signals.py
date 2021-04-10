@@ -146,8 +146,8 @@ class Spectrum(Signal):
             'x_axis_label': 'frequency [Hz]', 'y_axis_label': 'amplitude',
             'tools': 'pan,wheel_zoom,box_zoom,zoom_in,zoom_out,save,reset', 
             'active_drag': 'pan',
-            'active_inspect': None,
-            'active_scroll': None,
+#            'active_inspect': None,
+#            'active_scroll': None,
             'toolbar_location': 'above',
         }
         hover_tool = HoverTool(
