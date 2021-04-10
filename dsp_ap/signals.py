@@ -106,8 +106,8 @@ class AudioSignal(TimeSignal):
             'y_range': (-1, 1), 
             'tools': 'xpan,xwheel_zoom,box_zoom,xzoom_in,xzoom_out,save,reset', 
             'active_drag': 'xpan',
-            'active_inspect': None,
-            'active_scroll': None,
+#            'active_inspect': None,
+#            'active_scroll': None,
             'toolbar_location': 'above',
         }
         hover_tool = HoverTool(
