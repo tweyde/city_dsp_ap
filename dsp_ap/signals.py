@@ -202,8 +202,8 @@ class Spectrogram(Signal):
             'x_axis_label': 'time [s]', 'y_axis_label': 'frequency [Hz]',
             'tools': 'hover,pan,wheel_zoom,box_zoom,zoom_in,zoom_out,save,reset',
             'active_drag': 'pan',
-            'active_inspect': None,
-            'active_scroll': None,
+#            'active_inspect': None,
+#            'active_scroll': None,
             'toolbar_location': 'above',
             'tooltips': [('time [s]', '$x{0.000}'), ('frequency [Hz]', '$y{0.}'), ['amplitude', '@image']],
         }
