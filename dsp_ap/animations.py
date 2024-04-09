@@ -101,6 +101,12 @@ def convolve(signal1, signal2, controls=True, figsize=(12, 6), legend=['signal1'
         legend = (legend[0], 'flipped & time-shifted ' + legend[1])
     _shift_animation(longest_samples, np.flipud(shortest_samples), swapped, convs, 'conv', controls, figsize, legend, title, fps)
 
+def convolve2(signal1, signal2, controls=True, figsize=(12, 6), legend=['signal1', 'signal2'], title='', fps=5):
+    longest_samples, shortest_samples = get_both_samples(signal1, signal2)
+    convs = np.convolve(longest_samples, shortest_samples, mode='full')
+    legend = (legend[0], 'flipped & time-shifted ' + legend[1])
+    _shift_animation(longest_samples, np.flipud(shortest_samples), False, convs, 'conv', controls, figsize, legend, title, fps)
+
 
 def _get_both_samples_ordered(signal1, signal2):
     samples1, samples2 = get_both_samples(signal1, signal2)
